@@ -1,0 +1,21 @@
+import PropTypes from "prop-types";
+import s from "./Button.module.css";
+
+export default function Button({ onSubmit, currentPage }) {
+  const handleSumbit = (e) => {
+    e.preventDefault();
+    onSubmit({ page: currentPage + 1 });
+  };
+
+  return (
+    <button type="submit" className={s.Button} onClick={handleSumbit}>
+      Load more
+    </button>
+  );
+}
+
+Button.propTypes = {
+  totalHits: PropTypes.number,
+  onSubmit: PropTypes.func,
+  currentPage: PropTypes.number,
+};
