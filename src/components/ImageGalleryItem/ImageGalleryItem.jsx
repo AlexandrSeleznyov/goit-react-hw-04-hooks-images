@@ -3,7 +3,7 @@ import s from "./ImageGalleryItem.module.css";
 
 export default function ImageGalleryItem({ imageGallery, handleSrcState }) {
   return (
-    imageGallery.length !== 0 &&
+    imageGallery.length &&
     imageGallery.map((image) => (
       <li key={image.id} className={s.ImageGalleryItem}>
         <img

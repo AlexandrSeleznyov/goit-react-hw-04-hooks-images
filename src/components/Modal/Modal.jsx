@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import PropTypes from "prop-types";
 import s from "./Modal.module.css";
 
-export default function Modal({ togleModal, modalSrc }) {
+export default function Modal({ toggleModal, modalSrc }) {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.code === "Escape") {
-        togleModal(false);
+        toggleModal(false);
         console.log("выключаем модалку");
       }
     };
@@ -15,11 +15,11 @@ export default function Modal({ togleModal, modalSrc }) {
       console.log("удаляем слушатель");
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [togleModal]);
+  }, [toggleModal]);
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
-      togleModal(false);
+      toggleModal(false);
     }
   };
 
@@ -34,5 +34,5 @@ export default function Modal({ togleModal, modalSrc }) {
 
 Modal.propTypes = {
   modalSrc: PropTypes.string,
-  togleModal: PropTypes.func,
+  toggleModal: PropTypes.func,
 };

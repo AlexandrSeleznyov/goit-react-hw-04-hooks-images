@@ -8,12 +8,7 @@ export default function SearchBar({ onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const Data = {
-      image: image,
-      page: 1,
-      hits: 0,
-    };
-    image.trim() === "" ? toast.error("Please, type a word!") : onSubmit(Data);
+    image.trim() === "" ? toast.error("Please, type a word!") : onSubmit(image);
   };
 
   const handleChange = (e) => {

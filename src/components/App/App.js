@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import fetchImages from "../../services/Api";
+import fetchImages from "../../services/api";
 import SearchBar from "../SearchBar/SearchBar";
 import ImageGalleryItem from "../ImageGalleryItem/ImageGalleryItem";
 import ImageGallery from "../ImageGallery/ImageGallery";
@@ -13,7 +13,7 @@ import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 export default function App() {
   const [images, setImages] = useState([]);
   const [name, setName] = useState("");
-  const [page, setPage] = useState(null);
+  const [page, setPage] = useState(1);
   const [showLoader, setShowLoader] = useState(false);
   const [hits, setHits] = useState(0);
   const [showModal, setShowModal] = useState(false);
@@ -23,26 +23,30 @@ export default function App() {
     if (!name) {
       return;
     }
-    togleLoader(true);
-    fetchImages(name, page)
-      .then((totalImages) => {
-        setHits(totalImages.data.hits.length);
-        if (totalImages.data.hits.length === 0) {
+    setShowLoader(true);
+    async function getImages() {
+      try {
+        const images = await fetchImages(name, page);
+        console.log(images);
+        console.log("name", name);
+
+        setHits(images.length);
+
+        if (!images.length) {
           toast.error(
             "Sorry, there are no images matching your search query. Please try again."
           );
           setHits(0);
         }
-
-        setImages((prevImages) => [...prevImages, ...totalImages.data.hits]);
+        setImages((prevImages) => [...prevImages, ...images]);
         scrollToBottom();
-      })
-      .catch((error) => {
-        alert("error");
-      })
-      .finally(() => {
-        togleLoader(false);
-      });
+      } catch (e) {
+        alert(e);
+      } finally {
+        setShowLoader(false);
+      }
+    }
+    getImages();
   }, [name, page]);
 
   const scrollToBottom = () => {
@@ -53,14 +57,13 @@ export default function App() {
   };
 
   const writeToState = (data) => {
-    if (data.image) {
-      setImages([]);
-      setName(data.image);
-      setPage(data.page);
-      setHits(data.hits);
-    } else {
-      setPage(data.page);
+    if (data) {
+      setName(data);
     }
+  };
+  const changePage = (data) => {
+    setPage(data.page);
+    console.log("page", page);
   };
 
   const handleSrcState = (data1, data2) => {
@@ -68,16 +71,12 @@ export default function App() {
     setShowModal(data2);
   };
 
-  const togleModal = (data) => {
+  const toggleModal = (data) => {
     setShowModal(data);
   };
 
-  const togleLoader = (data) => {
-    return setShowLoader(data);
-  };
-
   return (
-    <div className={s.App}>
+    <div className={s.app}>
       <Toaster />
       <SearchBar onSubmit={writeToState} />
       {showLoader && <Load />}
@@ -87,11 +86,10 @@ export default function App() {
           handleSrcState={handleSrcState}
         />
       </ImageGallery>
-      {page && (
-        <Button onSubmit={writeToState} currentPage={page} totalHits={hits} />
+      {page && name && (
+        <Button onSubmit={changePage} currentPage={page} totalHits={hits} />
       )}
-      {showModal && <Modal modalSrc={modalSrc} togleModal={togleModal} />}
-      {showLoader && <Load />}
+      {showModal && <Modal modalSrc={modalSrc} toggleModal={toggleModal} />}
     </div>
   );
 }
